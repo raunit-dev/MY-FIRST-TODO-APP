@@ -7,10 +7,43 @@ dotenv.config();
 const SECRET = process.env.SECRET || 'defaultSecret';
 const router = express.Router();
  /// should i add a credentials for user info to ?
+ import {z} from "zod";
+ const weakPasswords = [
+  "password",
+  "12345678",
+  "qerty123",
+  "letmein",
+  "12345678",
+ ];
+ const credentials = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username cannot exceed 20 characters")
+    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, "Username must start with a letter or underscore and can only contain letters, numbers, and underscores"),
+
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .max(20, "Password cannot exceed 20 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[@$!%*?&]/, "Password must contain at least one special character (@$!%*?&)")
+    .refine((val)=> !weakPasswords.includes(val.toLowerCase()),
+    { message: "This password is too common, please choose a stronger one." })
+ }
+);
  
 
   router.post('/signup', async (req:Request, res:Response) :Promise<void>=> {
-    const { username, password } = req.body;
+    const result = credentials.safeParse(req.body)
+    if(!result.success)
+    {
+       res.json({ message: result.error});
+       return;
+    }
+    const { username, password } = result.data;
     const user = await User.findOne({ username });
     if (user) {
       res.status(403).json({ message: 'User already exists' });
@@ -26,7 +59,13 @@ const router = express.Router();
     }
   });
   router.post('/login', async (req: Request, res: Response): Promise<void> => {
-    const { username, password } = req.body;
+    const result = credentials.safeParse(req.body)
+    if(!result.success)
+    {
+       res.json({ message: result.error});
+       return;
+    }
+    const { username, password } = result.data;
     const user = await User.findOne({ username, password });
     
     if (user) {
