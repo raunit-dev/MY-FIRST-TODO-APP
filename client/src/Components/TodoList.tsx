@@ -3,13 +3,6 @@ import { authState } from '../store/authState.js';
 import {useRecoilValue} from "recoil";
 import { useNavigate } from 'react-router-dom';
 
-interface Todo {
-    _id: string;
-    title: string;
-    description: string;
-    done: boolean;
-}
-
 function useTodo() {
     const [todos,setTodos]=useState([]);
     useEffect(() => {
