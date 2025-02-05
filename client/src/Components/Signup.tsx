@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
+import { SignUpParams } from '@raunit/common';
 
 const Signup = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState<SignUpParams["username"]>('');
+    const [password, setPassword] = useState<SignUpParams["password"]>('');
     const navigate=useNavigate();
 
     const handleSignup = async () => {

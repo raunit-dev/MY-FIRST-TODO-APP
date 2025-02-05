@@ -305,10 +305,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@raunit/common@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@raunit/common/-/common-1.0.3.tgz"
-  integrity sha512-Niw3MNfexXrhrwUiJKn1RQwUrIrPeANuh1t7rDZfV1Qn/DuGI0LaMBnddPuJoiOFb894cUaQMzl5sZ6Qc26COA==
+"@raunit/common@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@raunit/common/-/common-1.0.5.tgz"
+  integrity sha512-rDuNZHjI/wKKOXLoZU/sBDVfFCqN+V2EwoLLCFUKokqJ99FJmK9qSDMuw9V21/y+Cd3JIfyNZvjzhEOYfSwEcg==
   dependencies:
     zod "^3.24.1"
 
