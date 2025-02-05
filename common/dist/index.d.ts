@@ -10,3 +10,14 @@ export declare const credentials: z.ZodObject<{
     username: string;
 }>;
 export type SignUpParams = z.infer<typeof credentials>;
+export declare const todoValidation: z.ZodObject<{
+    title: z.ZodString;
+    description: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    title: string;
+    description: string;
+}, {
+    title: string;
+    description: string;
+}>;
+export type TODOParams = z.infer<typeof todoValidation>;

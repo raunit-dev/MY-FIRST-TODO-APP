@@ -4,15 +4,9 @@ import { Todo } from '../db'
 import * as dotenv from 'dotenv';
 dotenv.config();
 import { Request, Response} from 'express';
+import {todoValidation} from '@raunit/common';
 const router = express.Router();
-import { z } from "zod"
 
-const todoValidation = z.object({
-  title:z.string()
-    .min(3, "title must be at least 3 characters long")
-    .max(20, "title cannot exceed 20 characters"),
-  description: z.string().min(3, "description must be at least 3 characters long"),
-})
 
 router.post('/todos', authenticateJwt, async (req: Request, res: Response): Promise<void> => {
   const result=todoValidation.safeParse(req.body);

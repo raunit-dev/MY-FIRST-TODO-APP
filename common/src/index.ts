@@ -26,5 +26,13 @@ import {z} from "zod";
  }
 );
 export type SignUpParams = z.infer<typeof credentials>;
+
+export const todoValidation = z.object({
+  title:z.string()
+    .min(3, "title must be at least 3 characters long")
+    .max(20, "title cannot exceed 20 characters"),
+  description: z.string().min(3, "description must be at least 3 characters long"),
+})
+export type TODOParams = z.infer<typeof todoValidation>;
 console.log("hi there");
 
