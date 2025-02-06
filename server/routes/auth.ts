@@ -21,7 +21,7 @@ const router = express.Router();
     if (user) {
       res.status(403).json({ message: 'User already exists' });
     } else {
-      const hashPassword = bcrypt.hash(password,10);
+      const hashPassword = await bcrypt.hash(password,10);
       const newUser = new User({ username, password: hashPassword });
       await newUser.save();
       jwt.sign({ id: newUser._id }, SECRET, { expiresIn: '1h' }, (err, accessToken) => {
@@ -83,5 +83,18 @@ const router = express.Router();
         res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     });
 });
+router.get('/me',authenticateJwt, async(req: Request,res: Response) => {
+  try {const userId = req.headers["user-id"];
+    const user = await User.findOne({ _id: userId });
+    if(!user)
+    {
+      res.status(403).json({ message: 'User not found'});
+      return;
+    }
+    res.json({username:user.username});}
+    catch(error) 
+     {res.status(500).json({ message: 'internal server error'})
+  }
+})
 
  export default router
