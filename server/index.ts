@@ -13,7 +13,7 @@ const port = 3000;
 
 const loginLimiter = rateLimit({
   windowMs:15*60*1000,
-  max:15,
+  max:100,
   message:"Too many login attempts from this IP,try again later"
 })
 app.use(cors());

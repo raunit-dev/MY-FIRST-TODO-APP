@@ -22,12 +22,16 @@ const router = express.Router();
     } else {
       const newUser = new User({ username, password });
       await newUser.save();
-      jwt.sign({ id: newUser._id }, SECRET, { expiresIn: '1h' }, (err, token) => {
+      jwt.sign({ id: newUser._id }, SECRET, { expiresIn: '1h' }, (err, accessToken) => {
         if (err) {
-          return res.status(500).json({ message: 'Error generating token' });
+          return res.status(500).json({ message: 'accessError generating token' });
         }
-        res.json({ message: 'User created successfully', token });
-      });
+        jwt.sign({ id: newUser._id }, SECRET, { expiresIn: '1h' }, (err, refreshToken) => {
+          if (err) {
+            return res.status(500).json({ message: 'Error generating refreshtoken' });
+          }
+        res.json({ message: 'User created successfully', refreshToken,accessToken });
+      })});
     }
   });
   router.post('/login', async (req: Request, res: Response): Promise<void> => {
@@ -42,13 +46,19 @@ const router = express.Router();
     const user = await User.findOne({ username, password });
     
     if (user) {
-      jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' }, (err, token) => {
+      jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' }, (err, accessToken) => {
         if (err) {
-          return res.status(500).json({ message: 'Error generating token' });
+          return res.status(500).json({ message: 'accessError generating token' });
         }
-        res.json({ message: 'Logged in successfully', token });
-      });
-    } else {
+        jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' }, (err, refreshToken) => {
+          if (err) {
+            return res.status(500).json({ message: 'Error generating refreshtoken' });
+          }
+        res.json({ message: 'logged in success', refreshToken,accessToken });
+      })
+    })
+    } 
+    else {
       res.status(403).json({ message: 'Invalid username or password' });
     }
   });
@@ -63,10 +73,27 @@ const router = express.Router();
       res.status(403).json({ message: "User not found" });
       return;
       }
-      res.json({ username: user.username }); // ✅ Correct response
+      res.json({ username: user.username }); 
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  router.post('/refresh-token',(req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token missing' });
+    }
+
+    jwt.verify(refreshToken,SECRET, (err:any, decoded:any) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid or expired refresh token' });
+        }
+
+        const newAccessToken = jwt.sign({ id: decoded.id }, SECRET, { expiresIn: '1h' });
+        const newRefreshToken = jwt.sign({ id: decoded.id }, SECRET, { expiresIn: '7d' });
+        res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    });
+});
 
  export default router
