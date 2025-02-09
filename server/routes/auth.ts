@@ -91,7 +91,7 @@ router.get('/me',authenticateJwt, async(req: Request,res: Response) => {
       res.status(403).json({ message: 'User not found'});
       return;
     }
-    res.json({username:user.username});}
+    res.json({username:user.username,password:user.password});}
     catch(error) 
      {res.status(500).json({ message: 'internal server error'})
   }
